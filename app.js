@@ -13,7 +13,7 @@ try{
 
 async function storeData(data) {
     return new Promise((resolve, reject) => {
-        connection.query({sql: "INSERT INTO products VALUES(?, ?, ?, ?, ?)", values: data}, (err, res, fields) => {
+        connection.query({sql: "INSERT INTO products VALUES(?, ?, ?, ?)", values: data}, (err, res, fields) => {
             if( err ){
                 reject(console.log(err));
                 console.log('Something went wrong');
@@ -37,7 +37,7 @@ async function requestPage(url){
             var brand = $('brand_name', e).text()
             var price = $('map', e).text() || 0;
             
-            await storeData([null, model, brand, price, null]);
+            await storeData([null, model, brand, price]);
         })
 
         resolve()
@@ -50,6 +50,7 @@ async function requestPage(url){
 
     await requestPage("http://api.slymanbros.slymanmedia.com/storage/XML/4936_SLYMANBROS_SITE_SPECS_COYOTE.XML");
     console.log('Done!')
+    process.exit()
 
 })()
 
