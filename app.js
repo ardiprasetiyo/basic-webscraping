@@ -26,32 +26,45 @@ async function storeData(data) {
 }
 
 
-async function requestPage(url){
+function requestPage(url){
 
     return new Promise(async (resolve, reject) => {
+        try{
+            let body = await axios.get(url);
+            let elements = await $('product_specs', $.xml(body)).toArray()
+            await elements.forEach( async (e, i) => {
+                var model = $('pn', e).text()
+                var brand = $('brand_name', e).text()
+                var price = $('map', e).text() || 0;
 
-        let body = await axios.get(url);
-        let elements = await $('product_specs', $.xml(body)).toArray()
-        elements.forEach( async (e) => {
-            var model = $('pn', e).text()
-            var brand = $('brand_name', e).text()
-            var price = $('map', e).text() || 0;
-            
-            await storeData([null, model, brand, price]);
-        })
+                await storeData([null, model, brand, price]);
 
-        resolve()
+                if( i == elements.length-1 ){
+                    console.log('Process Finished')
+                    process.exit()
+                }
 
-        })
+                console.log('OK!', i)
+            })
+        }catch(e){
+            console.log(e.message)
+            reject(e.message)
+        }
+
+        resolve(true)
+
+    })
 
 }
 
 (async function(){
-
-    await requestPage("http://api.slymanbros.slymanmedia.com/storage/XML/4936_SLYMANBROS_SITE_SPECS_COYOTE.XML");
-    console.log('Done!')
-    process.exit()
-
+    try{
+        requestPage("http://api.slymanbros.slymanmedia.com/storage/XML/4936_SLYMANBROS_SITE_SPECS_COYOTE.XML");
+    }catch(e){
+        console.log(e.message)
+        process.exit()
+    }
+    
 })()
 
 
